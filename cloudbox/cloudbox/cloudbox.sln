@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws", "aws", "{ED896060-060F-46D4-8467-0B2C6640A690}"
+	ProjectSection(SolutionItems) = preProject
+		..\aws\s3\s3.vcxproj = ..\aws\s3\s3.vcxproj
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "..\test\test.vcxproj", "{591259DF-25BD-4070-A784-E404B44125A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "third_party", "third_party", "{7D93EF9D-90E1-41EA-B619-7DDEBD5F1E06}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mongoose", "..\mongoose\mongoose.vcxproj", "{D64D071C-703B-4544-8DE2-A9FB9DF0A096}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloudbox", "cloudbox.vcxproj", "{0B2E15A3-5236-4CC5-BD00-B1D42FC43A82}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gmock", "..\gmock\gmock.vcxproj", "{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "http", "..\http\http.vcxproj", "{B05B0EF1-9C2F-406B-8831-79184A737732}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{591259DF-25BD-4070-A784-E404B44125A2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{591259DF-25BD-4070-A784-E404B44125A2}.Debug|Win32.Build.0 = Debug|Win32
+		{591259DF-25BD-4070-A784-E404B44125A2}.Release|Win32.ActiveCfg = Release|Win32
+		{591259DF-25BD-4070-A784-E404B44125A2}.Release|Win32.Build.0 = Release|Win32
+		{D64D071C-703B-4544-8DE2-A9FB9DF0A096}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D64D071C-703B-4544-8DE2-A9FB9DF0A096}.Debug|Win32.Build.0 = Debug|Win32
+		{D64D071C-703B-4544-8DE2-A9FB9DF0A096}.Release|Win32.ActiveCfg = Release|Win32
+		{D64D071C-703B-4544-8DE2-A9FB9DF0A096}.Release|Win32.Build.0 = Release|Win32
+		{0B2E15A3-5236-4CC5-BD00-B1D42FC43A82}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0B2E15A3-5236-4CC5-BD00-B1D42FC43A82}.Debug|Win32.Build.0 = Debug|Win32
+		{0B2E15A3-5236-4CC5-BD00-B1D42FC43A82}.Release|Win32.ActiveCfg = Release|Win32
+		{0B2E15A3-5236-4CC5-BD00-B1D42FC43A82}.Release|Win32.Build.0 = Release|Win32
+		{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}.Debug|Win32.Build.0 = Debug|Win32
+		{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}.Release|Win32.ActiveCfg = Release|Win32
+		{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}.Release|Win32.Build.0 = Release|Win32
+		{B05B0EF1-9C2F-406B-8831-79184A737732}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B05B0EF1-9C2F-406B-8831-79184A737732}.Debug|Win32.Build.0 = Debug|Win32
+		{B05B0EF1-9C2F-406B-8831-79184A737732}.Release|Win32.ActiveCfg = Release|Win32
+		{B05B0EF1-9C2F-406B-8831-79184A737732}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D64D071C-703B-4544-8DE2-A9FB9DF0A096} = {7D93EF9D-90E1-41EA-B619-7DDEBD5F1E06}
+		{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4} = {7D93EF9D-90E1-41EA-B619-7DDEBD5F1E06}
+	EndGlobalSection
+EndGlobal
