@@ -1,7 +1,8 @@
 #ifndef FAKE_BROWSER_H_
 #define FAKE_BROWSER_H_
 
-#include "codebase/boost_lib_fwd.h"
+#include <boost/asio.hpp>
+#include <boost/thread.hpp>
 #include <map>
 #include <vector>
 #include <string>
@@ -75,9 +76,9 @@ public:
 
 
 private:
-    IOService io_service_;
+    boost::asio::io_service io_service_;
+    boost::asio::ip::tcp::socket socket_;
     boost::thread thread_;
-    TCP::socket socket_;
     Response response_;
 };
 

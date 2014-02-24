@@ -3,5 +3,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="..\http\http_server_test.cpp" />
+    <ClCompile Include="fake_browser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fake_browser.h" />
   </ItemGroup>
 </Project>

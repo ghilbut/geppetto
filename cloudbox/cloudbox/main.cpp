@@ -1,13 +1,11 @@
-#include "http/http_server.h"
+#include "cloudbox_lib/cloudbox.h"
 
+int main(int argc, char* argv[]) {
 
-int main(void) {
-
-    Http::Server server;
-    server.Start("", 80);
-    for (;;) {
-    }
-    server.Stop();
+    CloudBox box;
+    box.Start("", 80);
+    box.RunShell();
+    box.Stop();
 
     return 0;
 }

@@ -4,12 +4,12 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="http_server_impl.h" />
-    <ClInclude Include="http_server.h" />
-    <ClInclude Include="http_server_delegate.h" />
-    <ClInclude Include="dummy.h" />
+    <ClInclude Include="js_http.h" />
+    <ClInclude Include="cloudbox.h" />
+    <ClInclude Include="cloudbox_impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="http_server_impl.cpp" />
+    <ClCompile Include="js_http.cpp" />
+    <ClCompile Include="cloudbox_impl.cpp" />
   </ItemGroup>
 </Project>

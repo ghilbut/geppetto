@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\http\http_server_test.cpp" />
+    <ClCompile Include="fake_browser.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -24,6 +25,9 @@
     <ProjectReference Include="..\mongoose\mongoose.vcxproj">
       <Project>{d64d071c-703b-4544-8de2-a9fb9df0a096}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fake_browser.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{591259DF-25BD-4070-A784-E404B44125A2}</ProjectGuid>
@@ -67,7 +71,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/gmock-1.7.0/gtest/include;$(SolutionDir)../third_party/gmock-1.7.0/include;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/gmock-1.7.0/gtest/include;$(SolutionDir)../third_party/gmock-1.7.0/include;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -86,7 +90,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/gmock-1.7.0/gtest/include;$(SolutionDir)../third_party/gmock-1.7.0/include;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/gmock-1.7.0/gtest/include;$(SolutionDir)../third_party/gmock-1.7.0/include;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

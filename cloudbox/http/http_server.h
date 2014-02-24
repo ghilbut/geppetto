@@ -7,6 +7,8 @@
 
 namespace Http {
 
+class ServerDelegate;
+
 class Server {
 public:
     Server(void);
@@ -15,6 +17,8 @@ public:
     bool Start(const std::string& document_root, uint16_t port);
     void Stop(void);
 
+    ServerDelegate* BindDelegate(ServerDelegate* delegate);
+    ServerDelegate* UnbindDelegate(void);
 
 private:
     class Impl;

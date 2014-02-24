@@ -108,7 +108,7 @@ RequestPost::RequestPost(const std::string& uri)
 
 
 FakeBrowser::FakeBrowser(void)
-    : thread_(boost::bind(&IOService::run, &io_service_))
+    : thread_(boost::bind(&boost::asio::io_service::run, &io_service_))
     , socket_(io_service_) {
     // nothing
 }
@@ -119,9 +119,9 @@ FakeBrowser::~FakeBrowser(void) {
 }
 
 bool FakeBrowser::Connect(const char* host, const char* port) {
-    TCP::resolver resolver(io_service_);
-    TCP::resolver::query query(TCP::v4(), host, port);
-    TCP::resolver::iterator iterator = resolver.resolve(query);
+    boost::asio::ip::tcp::resolver resolver(io_service_);
+    boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), host, port);
+    boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
     boost::asio::connect(socket_, iterator);
     return socket_.is_open();
 }

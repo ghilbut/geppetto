@@ -91,6 +91,12 @@ mongoose = {
   'failed':  (lambda num, path: failed(num, path))
 }
 
+"""
+svn co http://gyp.googlecode.com/svn/trunk build/gyp
+svn co http://src.chromium.org/svn/trunk/deps/third_party/cygwin@231940 third_party/cygwin
+svn co https://src.chromium.org/chrome/trunk/deps/third_party/icu46 third_party/icu
+"""
+
 v8 = {
   'url': 'https://github.com/v8/v8/archive/3.24.39.tar.gz',
   'success': (lambda num, path: None),

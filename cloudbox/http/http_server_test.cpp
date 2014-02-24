@@ -2,10 +2,12 @@
 #include "http/http_server.h"
 
 
+extern std::string kStoragePath;
+
 class HttpServerTest : public testing::Test {
 public:
     HttpServerTest(void) {
-        server_.Start("", 80);
+        server_.Start(kStoragePath, 80);
     }
 
     ~HttpServerTest(void) {
