@@ -16,8 +16,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloudbox", "cloudbox.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gmock", "..\gmock\gmock.vcxproj", "{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "http", "..\http\http.vcxproj", "{B05B0EF1-9C2F-406B-8831-79184A737732}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v8", "v8", "{179D31F2-4AF2-493D-A802-F2A40701D307}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(third_party)", "(third_party)", "{C1AE5DEF-E507-4BF0-AB52-56B4024C1225}"
@@ -50,6 +48,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "v8_snapshot", "..\third_par
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloudbox_lib", "..\cloudbox_lib\cloudbox_lib.vcxproj", "{C0BEA767-90E7-4DD2-AB83-868642FE1F8C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ext", "..\ext\ext.vcxproj", "{B05B0EF1-9C2F-406B-8831-79184A737732}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -72,10 +72,6 @@ Global
 		{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}.Debug|Win32.Build.0 = Debug|Win32
 		{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}.Release|Win32.ActiveCfg = Release|Win32
 		{5E3C684D-F4B6-44BF-AEFA-CEBE9E053BC4}.Release|Win32.Build.0 = Release|Win32
-		{B05B0EF1-9C2F-406B-8831-79184A737732}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B05B0EF1-9C2F-406B-8831-79184A737732}.Debug|Win32.Build.0 = Debug|Win32
-		{B05B0EF1-9C2F-406B-8831-79184A737732}.Release|Win32.ActiveCfg = Release|Win32
-		{B05B0EF1-9C2F-406B-8831-79184A737732}.Release|Win32.Build.0 = Release|Win32
 		{BE68ED2D-AEC1-045A-0133-1DA0A5B17070}.Debug|Win32.ActiveCfg = Debug|Win32
 		{BE68ED2D-AEC1-045A-0133-1DA0A5B17070}.Debug|Win32.Build.0 = Debug|Win32
 		{BE68ED2D-AEC1-045A-0133-1DA0A5B17070}.Release|Win32.ActiveCfg = Release|Win32
@@ -120,6 +116,10 @@ Global
 		{C0BEA767-90E7-4DD2-AB83-868642FE1F8C}.Debug|Win32.Build.0 = Debug|Win32
 		{C0BEA767-90E7-4DD2-AB83-868642FE1F8C}.Release|Win32.ActiveCfg = Release|Win32
 		{C0BEA767-90E7-4DD2-AB83-868642FE1F8C}.Release|Win32.Build.0 = Release|Win32
+		{B05B0EF1-9C2F-406B-8831-79184A737732}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B05B0EF1-9C2F-406B-8831-79184A737732}.Debug|Win32.Build.0 = Debug|Win32
+		{B05B0EF1-9C2F-406B-8831-79184A737732}.Release|Win32.ActiveCfg = Release|Win32
+		{B05B0EF1-9C2F-406B-8831-79184A737732}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

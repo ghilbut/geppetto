@@ -1,10 +1,11 @@
-#ifndef HTTP_SERVER_H_
-#define HTTP_SERVER_H_
+#ifndef EXT_HTTP_SERVER_H_
+#define EXT_HTTP_SERVER_H_
 
 #include <string>
 #include <stdint.h>
 
 
+namespace Ext {
 namespace Http {
 
 class ServerDelegate;
@@ -14,8 +15,8 @@ public:
     Server(void);
     ~Server(void);
 
-    bool Start(const std::string& document_root, uint16_t port);
-    void Stop(void);
+    bool Listen(const std::string& document_root, uint16_t port);
+    void Close(void);
 
     ServerDelegate* BindDelegate(ServerDelegate* delegate);
     ServerDelegate* UnbindDelegate(void);
@@ -26,5 +27,6 @@ private:
 };
 
 }  // namespace Http
+}  // namespace Ext
 
-#endif  // HTTP_SERVER_H_
+#endif  // EXT_HTTP_SERVER_H_

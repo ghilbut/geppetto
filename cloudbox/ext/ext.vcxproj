@@ -11,10 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C0BEA767-90E7-4DD2-AB83-868642FE1F8C}</ProjectGuid>
+    <ProjectGuid>{B05B0EF1-9C2F-406B-8831-79184A737732}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>js</RootNamespace>
-    <ProjectName>cloudbox_lib</ProjectName>
+    <RootNamespace>ext</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -46,26 +45,32 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/mongoose-5.2;$(SolutionDir)../third_party/v8-3.24.39/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/v8-3.24.39/include;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>MinSpace</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/mongoose-5.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/v8-3.24.39/include;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -73,62 +78,31 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\http\http.vcxproj">
-      <Project>{b05b0ef1-9c2f-406b-8831-79184a737732}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\third_party\icu\icudata.vcxproj">
-      <Project>{be68ed2d-aec1-045a-0133-1da0a5b17070}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\third_party\icu\icui18n.vcxproj">
-      <Project>{b2988131-61f5-d8cb-7f79-898dcead2438}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\third_party\icu\icuuc.vcxproj">
-      <Project>{8c637505-b3c3-3d12-6c72-86329a2b463a}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\generate_trig_table.vcxproj">
-      <Project>{1b815a0c-a282-e090-efeb-0d47a0629c83}</Project>
+    <ProjectReference Include="..\mongoose\mongoose.vcxproj">
+      <Project>{d64d071c-703b-4544-8de2-a9fb9df0a096}</Project>
       <Private>true</Private>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\js2c.vcxproj">
-      <Project>{c06d0c6f-0544-ce27-1a70-a8b9d4cc07f9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\v8.vcxproj">
-      <Project>{5cba7e91-2a4a-195b-373a-62bc67d7b4e9}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\v8_base.ia32.vcxproj">
-      <Project>{d040c1b1-1f9e-8801-cbc7-b3c0ca170f7c}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\v8_snapshot.vcxproj">
-      <Project>{1f38f785-adc4-5969-69e4-814e909c46ba}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cloudbox.h" />
-    <ClInclude Include="cloudbox_impl.h" />
-    <ClInclude Include="js_http.h" />
+    <ClInclude Include="dummy.h" />
+    <ClInclude Include="http_server.h" />
+    <ClInclude Include="http_server_delegate.h" />
+    <ClInclude Include="http_server_impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cloudbox_impl.cpp" />
-    <ClCompile Include="js_http.cpp" />
+    <ClCompile Include="http_server_impl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

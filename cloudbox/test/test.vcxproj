@@ -11,16 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\http\http_server_test.cpp" />
     <ClCompile Include="fake_browser.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\gmock\gmock.vcxproj">
       <Project>{5e3c684d-f4b6-44bf-aefa-cebe9e053bc4}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\http\http.vcxproj">
-      <Project>{b05b0ef1-9c2f-406b-8831-79184a737732}</Project>
     </ProjectReference>
     <ProjectReference Include="..\mongoose\mongoose.vcxproj">
       <Project>{d64d071c-703b-4544-8de2-a9fb9df0a096}</Project>

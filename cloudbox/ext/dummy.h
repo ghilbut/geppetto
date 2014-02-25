@@ -2,6 +2,7 @@
 #define DUMMY_H_
 
 
+namespace Ext {
 namespace Http {
 
 class Request {
@@ -21,5 +22,6 @@ class Error {
 };
 
 }  // namespace Http
+}  // namespace Ext
 
 #endif  // DUMMY_H_

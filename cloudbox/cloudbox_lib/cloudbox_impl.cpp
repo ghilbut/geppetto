@@ -1,11 +1,13 @@
 #include "cloudbox.h"
 #include "cloudbox_impl.h"
-#include "http/dummy.h"
+#include "ext/dummy.h"
 #include <assert.h>
 
 #include <map>
 #include <vector>
 #include <string>
+
+#include "js_http.h"
 
 
 
@@ -337,16 +339,8 @@ CloudBox::CloudBox(void)
 CloudBox::~CloudBox(void) {
 }
 
-bool CloudBox::Start(const std::string& document_root, uint16_t port) {
-    return pimpl_->Start(document_root, port);
-}
-
 void CloudBox::RunShell(void) {
     pimpl_->RunShell();
-}
-
-void CloudBox::Stop(void) {
-    pimpl_->Stop();
 }
 
 CloudBox::Impl::Impl(void) 
@@ -419,19 +413,23 @@ CloudBox::Impl::Impl(void)
 
 
 
+    JS::Http::Bind(context_);
 
 
-    /*v8::Handle<v8::String> source = ReadFile(isolate, "e:/test.txt");
+
+
+
+    v8::Handle<v8::String> source = ReadFile(isolate, "c:/work/test.txt");
     if (source.IsEmpty()) {
         //return -1;
     }
     if (!ExecuteString(isolate,
         source,
-        v8::String::NewFromUtf8(isolate, "e:/test.txt"),
+        v8::String::NewFromUtf8(isolate, "c:/work/test.txt"),
         false,
         false)) {
             //return -1;
-    }*/
+    }
 }
 
 CloudBox::Impl::~Impl(void) {
@@ -440,31 +438,8 @@ CloudBox::Impl::~Impl(void) {
     v8::V8::Dispose();
 }
 
-bool CloudBox::Impl::Start(const std::string& document_root, uint16_t port) {
-    return server_.Start(document_root, port);
-}
-
 void CloudBox::Impl::RunShell(void) {
     ::RunShell(context_);
-}
-
-void CloudBox::Impl::Stop(void) {
-    server_.Stop();
-}
-
-
-
-Http::Response& CloudBox::Impl::OnRequest(const Http::Request& request) {
-    Http::Response res;
-    return res;
-}
-
-void CloudBox::Impl::OnMessage(const Http::Websocket& sock, const Http::Message& msg) {
-
-}
-
-void CloudBox::Impl::OnError(const Http::Error& error) {
-
 }
 
 
@@ -665,14 +640,15 @@ void RunShell(v8::Handle<v8::Context> context) {
     fprintf(stderr, "V8 version %s [sample shell]\n", v8::V8::GetVersion());
     static const int kBufferSize = 256;
     // Enter the execution environment before evaluating any code.
-    v8::Context::Scope context_scope(context);
-    v8::Local<v8::String> name(
-        v8::String::NewFromUtf8(context->GetIsolate(), "(shell)"));
+    
+    v8::Local<v8::String> name(v8::String::NewFromUtf8(context->GetIsolate(), "(shell)"));
     while (true) {
         char buffer[kBufferSize];
         fprintf(stderr, "> ");
         char* str = fgets(buffer, kBufferSize, stdin);
         if (str == NULL) break;
+
+        v8::Context::Scope context_scope(context);
         v8::HandleScope handle_scope(context->GetIsolate());
         ExecuteString(context->GetIsolate(),
             v8::String::NewFromUtf8(context->GetIsolate(), str),

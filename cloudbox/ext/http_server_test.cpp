@@ -7,11 +7,11 @@ extern std::string kStoragePath;
 class HttpServerTest : public testing::Test {
 public:
     HttpServerTest(void) {
-        server_.Start(kStoragePath, 80);
+        server_.Listen(kStoragePath, 80);
     }
 
     ~HttpServerTest(void) {
-        server_.Stop();
+        server_.Close();
     }
 
 protected:

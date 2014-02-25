@@ -10,6 +10,6 @@
     <ClInclude Include="dummy.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="http_server_impl.cpp" />
+    <ClCompile Include="ext_http_server_impl.cpp" />
   </ItemGroup>
 </Project>

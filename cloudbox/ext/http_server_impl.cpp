@@ -7,7 +7,7 @@
 #include <mongoose.h>
 
 
-
+namespace Ext {
 namespace Http {
 
 
@@ -20,12 +20,12 @@ Server::~Server(void) {
     delete pimpl_;
 };
 
-bool Server::Start(const std::string& document_root, uint16_t port) {
-    return pimpl_->Start(document_root, port);
+bool Server::Listen(const std::string& document_root, uint16_t port) {
+    return pimpl_->Listen(document_root, port);
 }
 
-void Server::Stop(void) {
-    pimpl_->Stop();
+void Server::Close(void) {
+    pimpl_->Close();
 }
 
 ServerDelegate* Server::BindDelegate(ServerDelegate* delegate) {
@@ -37,25 +37,38 @@ ServerDelegate* Server::UnbindDelegate(void) {
 }
 
 Server::Impl::Impl(void) 
-    : delegate_(0), server_(0), is_stop_(false) {
+    : delegate_(0), server_(0), is_alive_(false), is_stop_(false) {
     // nothing
 };
 
-bool Server::Impl::Start(const std::string& document_root, uint16_t port) {
-    if (server_ != 0) {
-        return false;
-    }
+void* Server::Impl::thread_f(void* param) {
+    Server::Impl* s = static_cast<Server::Impl*>(param);
+    s->thread_main();
+    return 0;
+}
+
+bool Server::Impl::Listen(const std::string& document_root, uint16_t port) {
+
+    is_stop_ = false;
+
     server_ = mg_create_server(this);
-    thread_.swap(boost::thread(boost::bind(&Server::Impl::thread_main, this)));
+    //mg_set_option(server, "document_root", document_root.c_str());
+    mg_set_option(server_, "listening_port", "9000");
+    mg_set_request_handler(server_, &Server::Impl::request_handler);
+
+    //thread_.swap(boost::thread(boost::bind(&Server::Impl::thread_main, this)));
+    mg_start_thread(&thread_f, this);
     return true;
 }
 
-void Server::Impl::Stop(void) {
-    if (server_ == 0) {
+void Server::Impl::Close(void) {
+    if (!is_alive_) {
         return;
     }
     is_stop_ = true;
-    thread_.join();
+    //thread_.join();
+
+    mg_destroy_server(&server_);
 }
 
 ServerDelegate* Server::Impl::BindDelegate(ServerDelegate* delegate) {
@@ -103,19 +116,16 @@ int Server::Impl::request_handler(struct mg_connection *conn) {
 }
 
 void Server::Impl::thread_main(void) {
+    is_alive_ = true;
 
-    //mg_set_option(server_, "document_root", "");
-    mg_set_option(server_, "listening_port", "8080");
-    mg_set_request_handler(server_, &Server::Impl::request_handler);
-
-    while(!is_stop_) {
+    //while(is_stop_ == false) {
+    for (;;) {
         mg_poll_server(server_, 1000);
     }
 
-    mg_server* tmp = server_;
-    mg_destroy_server(&tmp);
-    server_ = 0;
+    is_alive_ = false;
 }
 
 
 }  // namespace Http
+}  // namespace Ext

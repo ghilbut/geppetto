@@ -78,9 +78,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\http\http.vcxproj">
-      <Project>{b05b0ef1-9c2f-406b-8831-79184a737732}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\third_party\v8-3.24.39\third_party\icu\icudata.vcxproj">
       <Project>{be68ed2d-aec1-045a-0133-1da0a5b17070}</Project>
     </ProjectReference>
@@ -124,11 +121,15 @@
   <ItemGroup>
     <ClInclude Include="cloudbox.h" />
     <ClInclude Include="cloudbox_impl.h" />
+    <ClInclude Include="js_base.h" />
     <ClInclude Include="js_http.h" />
+    <ClInclude Include="js_http_server.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cloudbox_impl.cpp" />
+    <ClCompile Include="js_base.cpp" />
     <ClCompile Include="js_http.cpp" />
+    <ClCompile Include="js_http_server.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

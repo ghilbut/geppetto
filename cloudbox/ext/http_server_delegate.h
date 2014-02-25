@@ -1,7 +1,8 @@
-#ifndef HTTP_SERVER_DELEGATE_H_
-#define HTTP_SERVER_DELEGATE_H_
+#ifndef EXT_HTTP_SERVER_DELEGATE_H_
+#define EXT_HTTP_SERVER_DELEGATE_H_
 
 
+namespace Ext {
 namespace Http {
 
 class Request;
@@ -21,5 +22,6 @@ protected:
 };
 
 }  // namespace Http
+}  // namespace Ext
 
-#endif  // HTTP_SERVER_DELEGATE_H_
+#endif  // EXT_SHTTP_SERVER_DELEGATE_H_
