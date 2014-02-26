@@ -3,10 +3,7 @@
 int main(int argc, char* argv[]) {
 
     CloudBox box;
-    //box.Listen("", 80);
-    //box.RunShell();
-    while(1);
-    //box.Close();
+    box.RunShell();
 
     return 0;
 }

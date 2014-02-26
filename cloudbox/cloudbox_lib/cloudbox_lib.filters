@@ -4,12 +4,12 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="js_http.h" />
+    <ClInclude Include="http.h" />
     <ClInclude Include="cloudbox.h" />
     <ClInclude Include="cloudbox_impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="js_http.cpp" />
+    <ClCompile Include="http.cpp" />
     <ClCompile Include="cloudbox_impl.cpp" />
   </ItemGroup>
 </Project>

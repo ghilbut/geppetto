@@ -1,7 +1,7 @@
-#include "js_http.h"
-#include "js_http_server.h"
+#include "http.h"
+#include "http_server.h"
 
-namespace JS {
+
 namespace Http {
 
 class Object {
@@ -13,9 +13,9 @@ public:
         v8::Handle<v8::ObjectTemplate> object_t = v8::ObjectTemplate::New(isolate);
         object_t->SetInternalFieldCount(1);
         v8::Handle<v8::Object> object = object_t->NewInstance();
-    
-        v8::Handle<v8::FunctionTemplate> ft = v8::FunctionTemplate::New(isolate, Server::Constructor);
-        object->Set(v8::String::NewFromUtf8(isolate, "Server"), ft->GetFunction());
+
+        v8::Handle<v8::FunctionTemplate> ft2 = v8::FunctionTemplate::New(isolate, Server::Constructor);
+        object->Set(v8::String::NewFromUtf8(isolate, "Server"), ft2->GetFunction());
 
         Object* http = new Object();
         object->SetInternalField(0, v8::External::New(isolate, http));
@@ -32,4 +32,3 @@ void Bind(v8::Handle<v8::Context> context) {
 }
 
 }  // namespace Http
-}  // namespace JS

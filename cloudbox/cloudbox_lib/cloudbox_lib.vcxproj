@@ -48,7 +48,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/v8-3.24.39/include;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/v8-3.24.39/include;$(SolutionDir)../third_party/mongoose-5.2;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -65,7 +65,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/v8-3.24.39/include;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../third_party/boost_1_55_0/include/boost-1_55;$(SolutionDir)../third_party/v8-3.24.39/include;$(SolutionDir)../third_party/mongoose-5.2;$(SolutionDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -121,15 +121,16 @@
   <ItemGroup>
     <ClInclude Include="cloudbox.h" />
     <ClInclude Include="cloudbox_impl.h" />
-    <ClInclude Include="js_base.h" />
-    <ClInclude Include="js_http.h" />
-    <ClInclude Include="js_http_server.h" />
+    <ClInclude Include="dummy.h" />
+    <ClInclude Include="http.h" />
+    <ClInclude Include="http_server.h" />
+    <ClInclude Include="sample.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cloudbox_impl.cpp" />
-    <ClCompile Include="js_base.cpp" />
-    <ClCompile Include="js_http.cpp" />
-    <ClCompile Include="js_http_server.cpp" />
+    <ClCompile Include="http.cpp" />
+    <ClCompile Include="http_server.cpp" />
+    <ClCompile Include="sample.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -89,8 +89,8 @@
     <ProjectReference Include="..\cloudbox_lib\cloudbox_lib.vcxproj">
       <Project>{c0bea767-90e7-4dd2-ab83-868642fe1f8c}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\ext\ext.vcxproj">
-      <Project>{b05b0ef1-9c2f-406b-8831-79184a737732}</Project>
+    <ProjectReference Include="..\mongoose\mongoose.vcxproj">
+      <Project>{d64d071c-703b-4544-8de2-a9fb9df0a096}</Project>
     </ProjectReference>
     <ProjectReference Include="..\third_party\v8-3.24.39\third_party\icu\icudata.vcxproj">
       <Project>{be68ed2d-aec1-045a-0133-1da0a5b17070}</Project>
