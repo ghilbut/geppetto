@@ -7,26 +7,18 @@
 #include <map>
 
 
-namespace Ext {
-namespace Http {
-class Server;
-}
-}
-
-namespace JS {
-namespace Http {
-class Server;
-}
-}
+class Storage;
 
 class CloudBox::Impl {
 public:
-    Impl(void);
+    Impl(const Storage& storage);
     ~Impl(void);
 
     void RunShell(void);
 
 private:
+    const Storage& storage_;
+
     boost::asio::io_service io_service_;
     boost::asio::io_service::work* work_;
     boost::thread thread_;

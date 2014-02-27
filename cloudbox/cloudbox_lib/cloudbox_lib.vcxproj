@@ -123,14 +123,18 @@
     <ClInclude Include="cloudbox_impl.h" />
     <ClInclude Include="dummy.h" />
     <ClInclude Include="http.h" />
+    <ClInclude Include="http_request.h" />
     <ClInclude Include="http_server.h" />
     <ClInclude Include="sample.h" />
+    <ClInclude Include="storage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cloudbox_impl.cpp" />
     <ClCompile Include="http.cpp" />
+    <ClCompile Include="http_request.cpp" />
     <ClCompile Include="http_server.cpp" />
     <ClCompile Include="sample.cpp" />
+    <ClCompile Include="storage.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

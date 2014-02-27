@@ -1,4 +1,5 @@
 #include "http_server.h"
+#include "http_request.h"
 #include "dummy.h"
 #include <mongoose.h>
 
@@ -10,30 +11,47 @@ void Server::Constructor(const v8::FunctionCallbackInfo<v8::Value>& args) {
     Server::Wrapper::Constructor(args);
 }
 
-void Server::DoListen(const std::string& document_root, uint16_t port) {
-    io_service_.post(boost::bind(&Server::handle_listen, this, document_root, port));
+bool Server::DoListen(const std::string& document_root, uint16_t port) {
+    boost::promise<bool> promise;
+
+    void (boost::promise<bool>::*setter)(const bool&) = &boost::promise<bool>::set_value;
+    boost::function<void(const bool&)> promise_setter = boost::bind(setter, &promise, _1);
+    strand_.post(boost::bind(&Server::handle_listen, this, document_root, port, promise_setter));
+
+    return promise.get_future().get();
 }
 
 void Server::DoClose(void) {
-    io_service_.post(boost::bind(&Server::handle_close, this));
+    strand_.post(boost::bind(&Server::handle_close, this));
 }
 
-void Server::FireRequest(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    io_service_.post(boost::bind(&Server::handle_request, this, args));
+void Server::FireRequest(struct mg_connection *conn) {
+    //strand_.post(boost::bind(&Server::handle_request, this, conn));
+
+    boost::promise<bool> promise;
+
+    void (boost::promise<bool>::*setter)(const bool&) = &boost::promise<bool>::set_value;
+    boost::function<void(const bool&)> promise_setter = boost::bind(setter, &promise, _1);
+    strand_.post(boost::bind(&Server::handle_request, this, conn, promise_setter));
+
+    promise.get_future().get();
 }
 
-void Server::FireMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    io_service_.post(boost::bind(&Server::handle_message, this, args));
+void Server::FireMessage(struct mg_connection *conn) {
+    strand_.post(boost::bind(&Server::handle_message, this, conn));
 }
 
-void Server::FireError(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    io_service_.post(boost::bind(&Server::handle_error, this, args));
+void Server::FireError(void) {
+    strand_.post(boost::bind(&Server::handle_error, this));
 }
 
 
 
-Server::Server(boost::asio::io_service& io_service)
-    : base_(*this), io_service_(io_service) {
+Server::Server(v8::Isolate* isolate, boost::asio::io_service& io_service)
+    : base_(*this)
+    , isolate_(isolate)
+    , io_service_(io_service)
+    , strand_(io_service_) {
         // nothing
 }
 
@@ -41,76 +59,75 @@ Server::~Server(void) {
     //onload_.Dispose();
 }
 
-void Server::handle_listen(const std::string& document_root, uint16_t port) {
-    base_.Listen(document_root, port);
+void Server::handle_listen(const std::string& document_root, uint16_t port, boost::function<void(const bool&)> ret_setter) {
+    ret_setter(base_.Listen(document_root, port));
 }
 
 void Server::handle_close() {
     base_.Close();
 }
 
-void Server::handle_request(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    v8::Isolate* isolate = args.GetIsolate();
-
-    v8::HandleScope handle_scope(isolate);
-
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    v8::Context::Scope context_scope(context);
-
-    Server* s = Wrapper::Unwrap(args);
-
-    v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate, s->on_request_);
-
-    if (func.IsEmpty()) {
+void Server::handle_request(struct mg_connection *conn, boost::function<void(const bool&)> ret_setter) {
+    if (on_request_.IsEmpty()) {
         return;
     }
 
+    v8::Isolate* isolate = isolate_; 
+    v8::Isolate::Scope isolate_scope(isolate_);
+    v8::HandleScope handle_scope(isolate_);
+
     v8::Handle<v8::Value> params[2];
-    params[0] = v8::Integer::New(isolate, 1);
-    params[1] = v8::Integer::New(isolate, 2);
+    params[0] = v8::Integer::New(isolate_, 10);
+    params[1] = Http::Request::New(isolate_, conn);
 
-    v8::Local<v8::Object> global = context->Global();
-    v8::Handle<v8::Value> js_result = func->Call(global, 2, params);
-
-    if (js_result->IsInt32()) {
-        int32_t result = (js_result->ToInt32())->Value();
+    v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate_, on_request_);
+    if (func->IsCallable()) {
+        v8::Local<v8::Object> object = v8::Local<v8::Object>::New(isolate_, object_);
+        v8::Handle<v8::Value> js_result = func->Call(object, 1, params);
         // do something with the result
-        args.GetReturnValue().Set(v8::Integer::New(isolate, result));
     }
+    ret_setter(true);
+    return;
 }
 
-void Server::handle_message(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    v8::Isolate* isolate = args.GetIsolate();
-
-    v8::HandleScope handle_scope(isolate);
-
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    v8::Context::Scope context_scope(context);
-
-    Server* s = Wrapper::Unwrap(args);
-
-    v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate, s->on_message_);
-
-    if (func.IsEmpty()) {
+void Server::handle_message(struct mg_connection *conn) {
+    if (on_message_.IsEmpty()) {
         return;
     }
 
+    v8::Isolate* isolate = isolate_; 
+    v8::Isolate::Scope isolate_scope(isolate_);
+    v8::HandleScope handle_scope(isolate_);
+
     v8::Handle<v8::Value> params[2];
-    params[0] = v8::Integer::New(isolate, 1);
-    params[1] = v8::Integer::New(isolate, 2);
+    params[0] = v8::Integer::New(isolate_, 10);
+    params[1] = v8::Integer::New(isolate_, 2);
 
-    v8::Local<v8::Object> global = context->Global();
-    v8::Handle<v8::Value> js_result = func->Call(global, 2, params);
-
-    if (js_result->IsInt32()) {
-        int32_t result = (js_result->ToInt32())->Value();
-        // do something with the result
-        args.GetReturnValue().Set(v8::Integer::New(isolate, result));
+    v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate_, on_message_);
+    if (func->IsCallable()) {
+        v8::Local<v8::Object> object = v8::Local<v8::Object>::New(isolate_, object_);
+        func->Call(object, 1, params);
     }
 }
 
-void Server::handle_error(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Server::handle_error(void) {
+    if (on_error_.IsEmpty()) {
+        return;
+    }
 
+    v8::Isolate* isolate = isolate_; 
+    v8::Isolate::Scope isolate_scope(isolate_);
+    v8::HandleScope handle_scope(isolate_);
+
+    v8::Handle<v8::Value> params[2];
+    params[0] = v8::Integer::New(isolate_, 10);
+    params[1] = v8::Integer::New(isolate_, 2);
+
+    v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate_, on_error_);
+    if (func->IsCallable()) {
+        v8::Local<v8::Object> object = v8::Local<v8::Object>::New(isolate_, object_);
+        func->Call(object, 1, params);
+    }
 }
 
 
@@ -136,29 +153,29 @@ bool Server::Base::Listen(const std::string& document_root, uint16_t port) {
     document_root_ = document_root;
     port_ = port;
 
+    if (thread_.joinable()) {
+        thread_.join();
+    }
     thread_.swap(boost::thread(boost::bind(&Server::Base::thread_main, this)));
     return true;
 }
 
 void Server::Base::Close(void) {
-    if (!is_alive_) {
-        return;
-    }
     is_stop_ = true;
-    thread_.join();
+    if (thread_.joinable()) {
+        thread_.join();
+    }
 }
 
 int Server::Base::request_handler(struct mg_connection *conn) {
     mg_printf_data(conn, "Hello! Requested URI is [%s]", conn->uri);
 
-    /*Server* s = static_cast<Server*>(conn->server_param);
-
+    Server& s = static_cast<Base*>(conn->server_param)->server_;
     if (conn->is_websocket) {
-        s->FireOnMessage(conn);
+        //s.FireMessage(conn);
     } else {
-        s->FireOnRequest(conn);
-    }*/
-
+        //s.FireRequest(conn);               
+    }
 
     return MG_REQUEST_PROCESSED;
 }
@@ -234,9 +251,10 @@ void Server::Wrapper::Constructor(const v8::FunctionCallbackInfo<v8::Value>& arg
 
     boost::asio::io_service* io_service = static_cast<boost::asio::io_service*>(isolate->GetData(0));
 
-    Server* server = new Server(*io_service);
+    Server* server = new Server(isolate, *io_service);
     v8::Handle<v8::Object> object = object_t->NewInstance();
     object->SetInternalField(0, v8::External::New(isolate, server));
+    server->object_.Reset(isolate, object);
 
     args.GetReturnValue().Set(object);
 }
@@ -255,16 +273,12 @@ void Server::Wrapper::GetEventRequest(v8::Local<v8::String> property, const v8::
 }
 
 void Server::Wrapper::SetEventRequest(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
-    Server* s = Unwrap(info);
-
     if (value->IsFunction()) {
         v8::Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(value);
-        (s->on_request_).Reset(info.GetIsolate(), func);
+        (Unwrap(info)->on_request_).Reset(info.GetIsolate(), func);
     } else {
         // TODO(ghilbut): throw js exception
     }
-
-    info.GetReturnValue().Set(value);
 }
 
 void Server::Wrapper::GetEventMessage(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -273,16 +287,26 @@ void Server::Wrapper::GetEventMessage(v8::Local<v8::String> property, const v8::
 }
 
 void Server::Wrapper::SetEventMessage(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
-    Server* s = Unwrap(info);
-
     if (value->IsFunction()) {
         v8::Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(value);
-        (s->on_message_).Reset(info.GetIsolate(), func);
+        (Unwrap(info)->on_message_).Reset(info.GetIsolate(), func);
     } else {
         // TODO(ghilbut): throw js exception
     }
+}
 
-    info.GetReturnValue().Set(value);
+void Server::Wrapper::GetEventError(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
+    Server* s = Unwrap(info);
+    info.GetReturnValue().Set(s->on_error_);
+}
+
+void Server::Wrapper::SetEventError(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
+    if (value->IsFunction()) {
+        v8::Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(value);
+        (Unwrap(info)->on_error_).Reset(info.GetIsolate(), func);
+    } else {
+        // TODO(ghilbut): throw js exception
+    }
 }
 
 void Server::Wrapper::Listen(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -322,9 +346,8 @@ void Server::Wrapper::Listen(const v8::FunctionCallbackInfo<v8::Value>& args) {
     }
 
     Server* s = Unwrap(args);
-    //bool result = s.Listen(document_root, static_cast<uint16_t>(port));
-    //args.GetReturnValue().Set(v8::Boolean::New(isolate, result));
-    s->DoListen(document_root, static_cast<uint16_t>(port));
+    bool result = s->DoListen(document_root, static_cast<uint16_t>(port));
+    args.GetReturnValue().Set(v8::Boolean::New(isolate, result));
 }
 
 void Server::Wrapper::Close(const v8::FunctionCallbackInfo<v8::Value>& args) {

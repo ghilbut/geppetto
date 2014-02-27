@@ -5,9 +5,11 @@
 #include <stdint.h>
 
 
+class Storage;
+
 class CloudBox {
 public:
-    CloudBox(void);
+    CloudBox(const Storage& storage);
     ~CloudBox(void);
 
     void RunShell(void);
