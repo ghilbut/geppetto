@@ -1,6 +1,5 @@
 #include "sample.h"
 
-#include "dummy.h"
 #include <assert.h>
 
 #include <map>

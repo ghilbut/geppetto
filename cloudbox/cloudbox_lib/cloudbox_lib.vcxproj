@@ -121,10 +121,11 @@
   <ItemGroup>
     <ClInclude Include="cloudbox.h" />
     <ClInclude Include="cloudbox_impl.h" />
-    <ClInclude Include="dummy.h" />
     <ClInclude Include="http.h" />
     <ClInclude Include="http_request.h" />
     <ClInclude Include="http_server.h" />
+    <ClInclude Include="http_server_base.h" />
+    <ClInclude Include="http_server_wrapper.h" />
     <ClInclude Include="sample.h" />
     <ClInclude Include="storage.h" />
   </ItemGroup>
@@ -133,6 +134,8 @@
     <ClCompile Include="http.cpp" />
     <ClCompile Include="http_request.cpp" />
     <ClCompile Include="http_server.cpp" />
+    <ClCompile Include="http_server_base.cpp" />
+    <ClCompile Include="http_server_wrapper.cpp" />
     <ClCompile Include="sample.cpp" />
     <ClCompile Include="storage.cpp" />
   </ItemGroup>

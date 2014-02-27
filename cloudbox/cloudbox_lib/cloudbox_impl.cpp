@@ -1,7 +1,6 @@
 #include "cloudbox.h"
 #include "cloudbox_impl.h"
 #include "storage.h"
-#include "dummy.h"
 #include "sample.h"
 #include "http.h"
 
