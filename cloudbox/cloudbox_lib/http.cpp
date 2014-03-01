@@ -1,42 +1,47 @@
 #include "http.h"
-#include "http_server.h"
-#include "http_request.h"
+#include "http_server_template.h"
+#include "http_request_template.h"
 
 
 namespace Http {
 
-class Object {
-public:
-    static void Bind(v8::Handle<v8::Context> context) {
-        v8::Isolate* isolate = context->GetIsolate();
+void NotConstruct(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    v8::Isolate* isolate = args.GetIsolate();
+    v8::Local<v8::String> msg = v8::String::NewFromUtf8(isolate, "Http is singleton. use http.<something>.");
+    v8::Local<v8::Value> e = v8::Exception::Error(msg);
+    args.GetReturnValue().Set(isolate->ThrowException(e));
+}
 
-        v8::HandleScope handle_scope(isolate);
-        v8::Handle<v8::ObjectTemplate> object_t = v8::ObjectTemplate::New(isolate);
-        object_t->SetInternalFieldCount(1);
-        v8::Handle<v8::Object> object = object_t->NewInstance();
 
-        {
-            v8::Handle<v8::FunctionTemplate> ft = v8::FunctionTemplate::New(isolate, Server::Constructor);
-            object->Set(v8::String::NewFromUtf8(isolate, "Server"), ft->GetFunction());
-        }
+v8::Persistent<v8::FunctionTemplate> Template::template_;
 
-        {
-            v8::Handle<v8::FunctionTemplate> ft = v8::FunctionTemplate::New(isolate, Request::Constructor);
-            object->Set(v8::String::NewFromUtf8(isolate, "Request"), ft->GetFunction());
-        }
+v8::Local<v8::FunctionTemplate> Template::New(v8::Isolate* isolate) {
+    return v8::FunctionTemplate::New(isolate, NotConstruct);
+}
 
-        Object* http = new Object();
-        object->SetInternalField(0, v8::External::New(isolate, http));
-        context->Global()->Set(v8::String::NewFromUtf8(isolate, "http"), object);
+v8::Local<v8::FunctionTemplate> Template::Get(v8::Isolate* isolate) {
+    v8::Local<v8::FunctionTemplate> ft;
+    if (template_.IsEmpty()) {
+        ft = v8::FunctionTemplate::New(isolate);
+        ft->SetClassName(v8::String::NewFromUtf8(isolate, "Http"));
+
+        v8::Handle<v8::ObjectTemplate> ot = ft->InstanceTemplate();
+        ot->Set(v8::String::NewFromUtf8(isolate, "Server"), ServerTemplate::Get(isolate));
+        ot->Set(v8::String::NewFromUtf8(isolate, "Request"), RequestTemplate::Get(isolate));
+        ot->SetInternalFieldCount(1);
+
+        template_.Reset(isolate, ft);
+    } else {
+        ft = v8::Local<v8::FunctionTemplate>::New(isolate, template_);
     }
+    return ft;
+}
 
-private:
-    Object(void) {};
-    ~Object(void) {};
-};
-
-void Bind(v8::Handle<v8::Context> context) {
-    Object::Bind(context);
+v8::Local<v8::Object> NewInstance(v8::Isolate* isolate) {
+    v8::Local<v8::FunctionTemplate> ft = Template::Get(isolate);
+    v8::Local<v8::ObjectTemplate> ot = ft->InstanceTemplate();
+    v8::Local<v8::Object> instance = ot->NewInstance();
+    return instance;
 }
 
 }  // namespace Http

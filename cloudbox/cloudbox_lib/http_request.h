@@ -3,50 +3,40 @@
 
 #include <v8.h>
 #include <boost/asio.hpp>
+#include <map>
+#include <string>
 
 
 struct mg_connection;
 
 namespace Http {
 
-class Request {
+class Server;
+
+class Request {    
 public:
-    static v8::Handle<v8::Object> New(v8::Isolate* isolate, struct mg_connection* conn = 0);
-    static void Constructor(const v8::FunctionCallbackInfo<v8::Value>& args);
+    static v8::Local<v8::Object> NewRecvRequest(v8::Isolate* isolate, struct mg_connection* conn);
 
-    const char* method(void) const;
-    void set_method(const std::string& method);
-
-
-private:
-    Request(v8::Isolate* isolate);
+    explicit Request(struct mg_connection* conn);
     ~Request(void);
 
-
-    class Wrapper {
-    public:
-        static v8::Handle<v8::Object> New(v8::Isolate* isolate, struct mg_connection* conn = 0);
-        static void Constructor(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-        template<typename T>
-        static Request* Unwrap(T _t);
-        static void GetMethod(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info);
-        static void SetMethod(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info);
-
-    private:
-        Wrapper(void) {}
-
-    private:
-        static v8::Persistent<v8::ObjectTemplate> template_;
-    };
-
-
-
 private:
-    v8::Isolate* isolate_;
-    v8::Persistent<v8::Object> object_;
+    friend class RequestTemplate;
 
     std::string method_;
+    std::string uri_;
+    std::string http_version_;
+    std::string query_string_;
+
+    std::string remote_ip_;
+    std::string local_ip_;
+    unsigned short remote_port_;
+    unsigned short local_port_;
+
+    std::map<std::string, std::string> headers_;
+
+    std::string content_;
+    Server& server_;
 };
 
 }  // namespace Http

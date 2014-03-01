@@ -312,7 +312,7 @@ void BindSample(v8::Handle<v8::Context> context) {
 
     // [Constructor without C++ class]
     {
-        v8::HandleScope handle_scope(isolate);
+        //v8::HandleScope handle_scope(isolate);
         v8::Handle<v8::FunctionTemplate> constructor_t = v8::FunctionTemplate::New(isolate, ElementContructor);
         v8::Handle<v8::Function> constructor_f = constructor_t->GetFunction();
         context->Global()->Set(v8::String::NewFromUtf8(isolate, "Element"), constructor_f);
@@ -320,7 +320,7 @@ void BindSample(v8::Handle<v8::Context> context) {
 
     // [Constructor with C++ class]
     {
-        v8::HandleScope handle_scope(isolate);
+        //v8::HandleScope handle_scope(isolate);
         v8::Handle<v8::FunctionTemplate> constructor_t = v8::FunctionTemplate::New(isolate, ResourceContructor);
         v8::Handle<v8::Function> constructor_f = constructor_t->GetFunction();
         context->Global()->Set(v8::String::NewFromUtf8(isolate, "Resource"), constructor_f);
@@ -328,7 +328,7 @@ void BindSample(v8::Handle<v8::Context> context) {
 
     // [Interceptor]
     {
-        v8::HandleScope handle_scope(isolate);
+        //v8::HandleScope handle_scope(isolate);
         v8::Handle<v8::ObjectTemplate> object_t = v8::ObjectTemplate::New(isolate);
         object_t->SetNamedPropertyHandler(DictionaryGetter, DictionarySetter);
         object_t->SetIndexedPropertyHandler(ArrayGetter, ArraySetter);

@@ -24,21 +24,43 @@ CloudBox::Impl::Impl(const Storage& storage)
     , isolate_(v8::Isolate::GetCurrent())
     , handle_scope_(isolate_) {
 
-    
-    isolate_->SetData(0, &io_service_);
-    
+
+
     v8::Isolate* isolate = isolate_;
-    context_ = CreateShellContext(isolate);
+    isolate->SetData(0, &io_service_);
+
+
+
+    v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
+    global->Set(v8::String::NewFromUtf8(isolate, "print"), v8::FunctionTemplate::New(isolate, Print));
+    global->Set(v8::String::NewFromUtf8(isolate, "read"), v8::FunctionTemplate::New(isolate, Read));
+    global->Set(v8::String::NewFromUtf8(isolate, "load"), v8::FunctionTemplate::New(isolate, Load));
+    global->Set(v8::String::NewFromUtf8(isolate, "quit"), v8::FunctionTemplate::New(isolate, Quit));
+    global->Set(v8::String::NewFromUtf8(isolate, "version"), v8::FunctionTemplate::New(isolate, Version));
+
+
+
+    global->Set(
+        v8::String::NewFromUtf8(isolate, "Http")
+        , Http::Template::New(isolate)
+        , Http::kAttribute);
+
+
+
+    context_ = v8::Context::New(isolate, NULL, global);
+    //context_ = CreateShellContext(isolate);
     context_->Enter();
 
 
 
-
-
     BindSample(context_);
-    Http::Bind(context_);
-
-
+    {
+        v8::HandleScope handle_scope(context_->GetIsolate());
+        context_->Global()->Set(
+            v8::String::NewFromUtf8(isolate, "http")
+            , Http::NewInstance(isolate)
+            , Http::kAttribute);
+    }
 
 
 

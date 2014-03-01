@@ -6,8 +6,11 @@
 
 namespace Http {
 
-class Server::Wrapper {
+class Server;
+
+class ServerTemplate {
 public:
+    static v8::Local<v8::FunctionTemplate> Get(v8::Isolate* isolate);
     static void Constructor(const v8::FunctionCallbackInfo<v8::Value>& args);
 
     template<typename T>
@@ -23,10 +26,8 @@ public:
     static void Close(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 private:
-    Wrapper(void) {}
-
-private:
-    static v8::Persistent<v8::ObjectTemplate> template_;
+    static v8::Persistent<v8::FunctionTemplate> template_;
+    ServerTemplate(void) {}
 };
 
 }  // namespace Http
