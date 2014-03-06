@@ -1,23 +1,23 @@
-#include "cloudbox.h"
-#include "cloudbox_impl.h"
+#include "restbox.h"
+#include "restbox_impl.h"
 #include "storage.h"
 #include "sample.h"
 #include "http.h"
 
 
 
-CloudBox::CloudBox(const Storage& storage)
-    : pimpl_(new CloudBox::Impl(storage)) {
+RestBox::RestBox(const Storage& storage)
+    : pimpl_(new RestBox::Impl(storage)) {
 }
 
-CloudBox::~CloudBox(void) {
+RestBox::~RestBox(void) {
 }
 
-void CloudBox::RunShell(void) {
+void RestBox::RunShell(void) {
     pimpl_->RunShell();
 }
 
-CloudBox::Impl::Impl(const Storage& storage)
+RestBox::Impl::Impl(const Storage& storage)
     : storage_(storage)
     , work_(new boost::asio::io_service::work(io_service_))
     , thread_(boost::bind(&boost::asio::io_service::run, &io_service_))
@@ -77,7 +77,7 @@ CloudBox::Impl::Impl(const Storage& storage)
     }
 }
 
-CloudBox::Impl::~Impl(void) {
+RestBox::Impl::~Impl(void) {
 
     context_->Exit();
     v8::V8::Dispose();
@@ -89,6 +89,6 @@ CloudBox::Impl::~Impl(void) {
     thread_.join();
 }
 
-void CloudBox::Impl::RunShell(void) {
+void RestBox::Impl::RunShell(void) {
     ::RunShell(context_);
 }

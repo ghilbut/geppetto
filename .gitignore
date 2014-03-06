@@ -228,5 +228,5 @@ pip-log.txt
 ## geppetto
 #############
 
-cloudbox/third_party/
+restbox/third_party/
 settings.json

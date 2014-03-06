@@ -1,5 +1,5 @@
-#include "cloudbox_lib/storage.h"
-#include "cloudbox_lib/cloudbox.h"
+#include "restbox_lib/storage.h"
+#include "restbox_lib/restbox.h"
 
 int main(int argc, char* argv[]) {
 
@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
 
     Storage s(argv[1]);
 
-    CloudBox box(s);
+    RestBox box(s);
     box.RunShell();
 
     return 0;

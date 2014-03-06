@@ -5,11 +5,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="http.h" />
-    <ClInclude Include="cloudbox.h" />
-    <ClInclude Include="cloudbox_impl.h" />
+    <ClInclude Include="restbox.h" />
+    <ClInclude Include="restbox_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="http.cpp" />
-    <ClCompile Include="cloudbox_impl.cpp" />
+    <ClCompile Include="restbox_impl.cpp" />
   </ItemGroup>
 </Project>

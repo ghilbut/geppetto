@@ -1,5 +1,5 @@
-#ifndef JS_COUDBOX_IMPL_H_
-#define JS_COUDBOX_IMPL_H_
+#ifndef JS_RESTBOX_IMPL_H_
+#define JS_RESTBOX_IMPL_H_
 
 #include <v8.h>
 #include <boost/asio.hpp>
@@ -9,7 +9,7 @@
 
 class Storage;
 
-class CloudBox::Impl {
+class RestBox::Impl {
 public:
     Impl(const Storage& storage);
     ~Impl(void);
@@ -28,4 +28,4 @@ private:
     v8::Handle<v8::Context> context_;
 };
 
-#endif  // JS_COUDBOX_IMPL_H_
+#endif  // JS_RESTBOX_IMPL_H_

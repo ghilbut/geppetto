@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0B2E15A3-5236-4CC5-BD00-B1D42FC43A82}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>cloudbox</RootNamespace>
+    <RootNamespace>restbox</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -86,7 +86,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cloudbox_lib\cloudbox_lib.vcxproj">
+    <ProjectReference Include="..\restbox_lib\restbox_lib.vcxproj">
       <Project>{c0bea767-90e7-4dd2-ab83-868642fe1f8c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\mongoose\mongoose.vcxproj">
