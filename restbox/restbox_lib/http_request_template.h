@@ -12,6 +12,7 @@ class RequestTemplate {
 public:
     static v8::Local<v8::FunctionTemplate> Get(v8::Isolate* isolate);
     static v8::Local<v8::Object> NewInstance(v8::Isolate* isolate, struct mg_connection* conn);
+    static v8::Local<v8::Object> NewInstance(v8::Isolate* isolate, Request* req);
 
     static void HeaderGetter(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info);
     static void HeaderGetter(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info);

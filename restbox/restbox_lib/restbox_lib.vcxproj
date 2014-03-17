@@ -119,6 +119,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="http_response.h" />
     <ClInclude Include="restbox.h" />
     <ClInclude Include="restbox_impl.h" />
     <ClInclude Include="http.h" />
@@ -131,6 +132,7 @@
     <ClInclude Include="storage.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="http_response.cpp" />
     <ClCompile Include="restbox_impl.cpp" />
     <ClCompile Include="http.cpp" />
     <ClCompile Include="http_request.cpp" />

@@ -1,11 +1,12 @@
+count = 0;
+
 h1 = new http.Server();
 h1.onrequest = function (request) {
 
-	r = request;
-	//print(request);
-	//print(request.method);
-	//print(request.constructor);
-	//print(request.constructor.prototype);
+	var r = request;
+	print(request);
+	print(request.constructor);
+	print(request.constructor.prototype);
 	
 	print(r.request_method);
 	print(r.uri);
@@ -25,14 +26,28 @@ h1.onrequest = function (request) {
 		print(hs[n]);
 		print('----------------------------------------');
 	}
-	print(r.content);
-}
+	//print(r.content);
+
+    print('---------------------------------------------');
+    print(http.Response);
+
+    ++count;
+
+    if (count > 2) {
+        return http.Response;
+    }
+
+    //var res = new http.Response();
+    //res.statusCode = 500;
+    //res.data = 'server error';
+    //return res;
+};
 h1.onmessage = function () {
 	print('message');
-}
+};
 h1.onerror = function (request) {
 	print('error');
-}
+};
 print(h1.listen(80));
 
 

@@ -1,6 +1,10 @@
 #include "http_server.h"
 #include "http_request.h"
+#include "http_request_template.h"
+#include "http_response.h"
+#include "http_response_template.h"
 #include <mongoose.h>
+
 
 
 namespace Http {
@@ -18,6 +22,24 @@ Server::~Server(void) {
     DoClose();
 }
 
+void Server::WeakCallback(const v8::WeakCallbackData<v8::Object, Server>& data) {
+  Server* pThis = data.GetParameter();
+  (pThis->self_).Reset();
+  delete pThis;
+}
+
+void Server::MakeWeak(v8::Isolate* isolate, v8::Local<v8::Object> self) {
+    v8::HandleScope handle_scope(isolate);
+    self_.Reset(isolate, self);
+    self->SetAlignedPointerInInternalField(0, this);
+    self_.MarkIndependent();
+    self_.SetWeak(this, WeakCallback);
+}
+
+void Server::ClearWeak(void) {
+    self_.ClearWeak();
+}
+
 bool Server::DoListen(uint16_t port) {
     boost::promise<bool> promise;
 
@@ -30,10 +52,9 @@ bool Server::DoListen(uint16_t port) {
 
 void Server::DoClose(void) {
     strand_.post(boost::bind(&Server::handle_close, this));
-}
-
-void Server::set_self(v8::Isolate* isolate, v8::Handle<v8::Object> self) {
-    self_.Reset(isolate, self);
+    if (thread_.joinable()) {
+        thread_.join();
+    }
 }
 
 v8::Local<v8::Function> Server::request_trigger(v8::Isolate* isolate) const {
@@ -60,24 +81,12 @@ void Server::set_error_trigger(v8::Isolate* isolate, v8::Handle<v8::Function> tr
     on_error_.Reset(isolate, trigger);
 }
 
-void Server::FireRequest(struct mg_connection *conn) {
-    boost::promise<bool> promise;
-
-    void (boost::promise<bool>::*setter)(const bool&) = &boost::promise<bool>::set_value;
-    boost::function<void(const bool&)> promise_setter = boost::bind(setter, &promise, _1);
-    strand_.post(boost::bind(&Server::handle_request, this, conn, promise_setter));
-
-    promise.get_future().get();
+void Server::FireRequest(struct mg_connection *conn, Request* req) {
+    strand_.post(boost::bind(&Server::handle_request, this, conn, req));
 }
 
 void Server::FireMessage(struct mg_connection *conn) {
-    boost::promise<bool> promise;
-
-    void (boost::promise<bool>::*setter)(const bool&) = &boost::promise<bool>::set_value;
-    boost::function<void(const bool&)> promise_setter = boost::bind(setter, &promise, _1);
-    strand_.post(boost::bind(&Server::handle_message, this, conn, promise_setter));
-
-    promise.get_future().get();
+    strand_.post(boost::bind(&Server::handle_message, this, conn));
 }
 
 void Server::FireError(void) {
@@ -103,14 +112,11 @@ void Server::handle_listen(uint16_t port, boost::function<void(const bool&)> ret
 
 void Server::handle_close() {
     is_stop_ = true;
-    if (thread_.joinable()) {
-        thread_.join();
-    }
 }
 
-void Server::handle_request(struct mg_connection *conn, boost::function<void(const bool&)> ret_setter) {
+void Server::handle_request(struct mg_connection *conn, Request* req) {
     if (on_request_.IsEmpty()) {
-        ret_setter(false);
+        req->Respond(0);
         return;
     }
 
@@ -118,32 +124,28 @@ void Server::handle_request(struct mg_connection *conn, boost::function<void(con
     v8::Isolate::Scope isolate_scope(isolate_);
     v8::HandleScope handle_scope(isolate_);
 
-    v8::Handle<v8::Value> params[1];
-    params[0] = Http::Request::NewRecvRequest(isolate_, conn);
-
     v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate_, on_request_);
-    if (func->IsCallable()) {
-        v8::Local<v8::Object> object = v8::Local<v8::Object>::New(isolate_, self_);
-        v8::Handle<v8::Value> js_result = func->Call(object, 1, params);
-        // do something with the result
+    if (!func->IsCallable()) {
+        req->Respond(0);
+        return;
     }
-    ret_setter(true);
-    return;
+
+    v8::Handle<v8::Value> params[1];
+    //params[0] = Request::NewRecvRequest(isolate_, conn);
+    params[0] = RequestTemplate::NewInstance(isolate_, req);
+
+    v8::Local<v8::Object> object = v8::Local<v8::Object>::New(isolate_, self_);
+    func->Call(object, 1, params);
 }
 
-void Server::handle_message(struct mg_connection *conn, boost::function<void(const bool&)> ret_setter) {
+void Server::handle_message(struct mg_connection *conn) {
     if (on_message_.IsEmpty()) {
-        ret_setter(false);
         return;
     }
     v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate_, on_message_);
     if (!func->IsCallable()) {
-        ret_setter(false);
         return;
     }
-    ret_setter(true);
-
-
 
     v8::Isolate* isolate = isolate_; 
     v8::Isolate::Scope isolate_scope(isolate_);
@@ -179,11 +181,15 @@ void Server::handle_error(void) {
 }
 
 int Server::request_handler(struct mg_connection *conn) {
-    mg_printf_data(conn, "Hello! Requested URI is [%s]", conn->uri);
 
     Server* s = static_cast<Server*>(conn->server_param);
     if (!conn->is_websocket) {
-        s->FireRequest(conn);
+        Request* req = new Request(conn);
+        s->FireRequest(conn, req);
+        Response* res = req->Wait();
+        if (res == 0) {
+            mg_printf_data(conn, "Hello! Requested URI is [%s]", conn->uri);
+        }
     } else {
         s->FireMessage(conn);
     }

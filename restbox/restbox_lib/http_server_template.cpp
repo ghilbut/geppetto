@@ -41,17 +41,17 @@ void ServerTemplate::Constructor(const v8::FunctionCallbackInfo<v8::Value>& args
     Server* server = new Server(isolate, *io_service);
    
     v8::Local<v8::Object> object = args.Holder();
-    object->SetInternalField(0, v8::External::New(isolate, server));
-    server->set_self(isolate, object);
+    server->MakeWeak(isolate, object);
     args.GetReturnValue().Set(object);
 }
 
 template<typename T>
 Server* ServerTemplate::Unwrap(T _t) {
     v8::Local<v8::Object> object = _t.Holder();
-    v8::Handle<v8::External> wrap = v8::Handle<v8::External>::Cast(object->GetInternalField(0));
-    void* ptr = wrap->Value();
-    return static_cast<Server*>(ptr);
+    //v8::Handle<v8::External> wrap = v8::Handle<v8::External>::Cast(object->GetInternalField(0));
+    //void* ptr = wrap->Value();
+    //return static_cast<Server*>(ptr);
+    return static_cast<Server*>(object->GetAlignedPointerFromInternalField(0));
 }
 
 void ServerTemplate::GetEventRequest(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -143,6 +143,5 @@ void ServerTemplate::Close(const v8::FunctionCallbackInfo<v8::Value>& args) {
     Server* s = Unwrap(args);
     s->DoClose();
 }
-
 
 }  // namespace Http

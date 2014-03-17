@@ -3,6 +3,7 @@
 
 #include <v8.h>
 #include <boost/asio.hpp>
+#include <boost/thread.hpp>
 #include <map>
 #include <string>
 
@@ -11,32 +12,42 @@ struct mg_connection;
 
 namespace Http {
 
-class Server;
+class Response;
 
 class Request {    
 public:
-    static v8::Local<v8::Object> NewRecvRequest(v8::Isolate* isolate, struct mg_connection* conn);
-
     explicit Request(struct mg_connection* conn);
     ~Request(void);
+
+    static void WeakCallback(const v8::WeakCallbackData<v8::Object, Request>& data);
+    void MakeWeak(v8::Isolate* isolate, v8::Local<v8::Object> self);
+    void ClearWeak(void);
+
+    Response* Wait(void) const;
+    void Respond(Response* res) const;
+
 
 private:
     friend class RequestTemplate;
 
-    std::string method_;
-    std::string uri_;
-    std::string http_version_;
-    std::string query_string_;
+    v8::Persistent<v8::Object> self_;
 
-    std::string remote_ip_;
-    std::string local_ip_;
-    unsigned short remote_port_;
-    unsigned short local_port_;
+    const std::string method_;
+    const std::string uri_;
+    const std::string http_version_;
+    const std::string query_string_;
+
+    const std::string remote_ip_;
+    const std::string local_ip_;
+    const unsigned short remote_port_;
+    const unsigned short local_port_;
 
     std::map<std::string, std::string> headers_;
+    const std::string content_;
 
-    std::string content_;
-    Server& server_;
+    mutable boost::mutex mutex_;
+    mutable boost::condition_variable wait_;
+    mutable Response* response_;
 };
 
 }  // namespace Http

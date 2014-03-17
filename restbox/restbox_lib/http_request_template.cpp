@@ -16,7 +16,7 @@ v8::Local<v8::FunctionTemplate> RequestTemplate::Get(v8::Isolate* isolate) {
         ft->SetClassName(v8::String::NewFromUtf8(isolate, "Request"));
 
         v8::Handle<v8::ObjectTemplate> ot = ft->InstanceTemplate();
-        ot->SetAccessor(v8::String::NewFromUtf8(isolate, "method")
+        ot->SetAccessor(v8::String::NewFromUtf8(isolate, "request_method")
             , RequestTemplate::GetMethod
             , 0
             , v8::Handle<v8::Value>()
@@ -97,12 +97,39 @@ v8::Local<v8::Object> RequestTemplate::NewInstance(v8::Isolate* isolate, struct 
     return i;
 }
 
+v8::Local<v8::Object> RequestTemplate::NewInstance(v8::Isolate* isolate, Request* req) {
+
+    v8::Local<v8::ObjectTemplate> headers_t;
+    if (object_t_.IsEmpty()) {
+        headers_t = v8::ObjectTemplate::New(isolate);
+        headers_t->SetNamedPropertyHandler(RequestTemplate::HeaderGetter);
+        headers_t->SetIndexedPropertyHandler(RequestTemplate::HeaderGetter);
+        headers_t->SetInternalFieldCount(1);
+        object_t_.Reset(isolate, headers_t);
+    } else {
+        headers_t = v8::Local<v8::ObjectTemplate>::New(isolate, object_t_);
+    }
+
+    v8::Local<v8::Object> headers = headers_t->NewInstance();
+    //headers->SetInternalField(0, v8::External::New(isolate, req));
+    headers->SetAlignedPointerInInternalField(0, req);
+
+    v8::Local<v8::FunctionTemplate> ft = RequestTemplate::Get(isolate);
+    v8::Local<v8::Function> f = ft->GetFunction();
+    v8::Local<v8::Object> i = f->NewInstance();
+    i->Set(v8::String::NewFromUtf8(isolate, "headers"), headers);
+    //i->SetInternalField(0, v8::External::New(isolate, req));
+    req->MakeWeak(isolate, i);
+    return i;
+}
+
 template<typename T>
 Request* RequestTemplate::Unwrap(T _t) {
     v8::Local<v8::Object> object = _t.Holder();
-    v8::Handle<v8::External> wrap = v8::Handle<v8::External>::Cast(object->GetInternalField(0));
-    void* ptr = wrap->Value();
-    return static_cast<Request*>(ptr);
+    //v8::Handle<v8::External> wrap = v8::Handle<v8::External>::Cast(object->GetInternalField(0));
+    //void* ptr = wrap->Value();
+    //return static_cast<Request*>(ptr);
+    return static_cast<Request*>(object->GetAlignedPointerFromInternalField(0));
 }
 
 void RequestTemplate::GetMethod(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -186,7 +213,7 @@ void RequestTemplate::HeaderGetter(uint32_t index, const v8::PropertyCallbackInf
     }
 
     v8::Local<v8::Object> instance = v8::Object::New(isolate);
-    instance->Set(v8::String::NewFromUtf8(isolate, "key"), v8::String::NewFromUtf8(isolate, (itr->first).c_str()));
+    instance->Set(v8::String::NewFromUtf8(isolate, "name"), v8::String::NewFromUtf8(isolate, (itr->first).c_str()));
     instance->Set(v8::String::NewFromUtf8(isolate, "value"), v8::String::NewFromUtf8(isolate, (itr->second).c_str()));
     info.GetReturnValue().Set(instance);
 }
@@ -195,7 +222,7 @@ void RequestTemplate::GetContent(v8::Local<v8::String> property, const v8::Prope
     v8::Isolate* isolate = info.GetIsolate();
 
     Request* r = Unwrap(info);
-    std::string& c = r->content_;
+    const std::string& c = r->content_;
     if (c.empty()) {
         info.GetReturnValue().Set(v8::Null(isolate));
     } else {

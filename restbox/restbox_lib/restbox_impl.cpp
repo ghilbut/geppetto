@@ -80,9 +80,6 @@ RestBox::Impl::Impl(const Storage& storage)
 RestBox::Impl::~Impl(void) {
 
     context_->Exit();
-    v8::V8::Dispose();
-
-
 
     delete work_;
     io_service_.stop();
