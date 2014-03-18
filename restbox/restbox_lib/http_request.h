@@ -23,14 +23,15 @@ public:
     void MakeWeak(v8::Isolate* isolate, v8::Local<v8::Object> self);
     void ClearWeak(void);
 
-    Response* Wait(void) const;
-    void Respond(Response* res) const;
+    void Wait(void) const;
+    void Notify(void) const;
 
+    struct mg_connection* conn(void) const;
 
 private:
     friend class RequestTemplate;
 
-    v8::Persistent<v8::Object> self_;
+    struct mg_connection* conn_;
 
     const std::string method_;
     const std::string uri_;
@@ -47,7 +48,8 @@ private:
 
     mutable boost::mutex mutex_;
     mutable boost::condition_variable wait_;
-    mutable Response* response_;
+
+    v8::Persistent<v8::Object> self_;
 };
 
 }  // namespace Http

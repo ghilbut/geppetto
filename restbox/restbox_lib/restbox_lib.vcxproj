@@ -78,47 +78,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\third_party\v8-3.24.39\third_party\icu\icudata.vcxproj">
-      <Project>{be68ed2d-aec1-045a-0133-1da0a5b17070}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\third_party\icu\icui18n.vcxproj">
-      <Project>{b2988131-61f5-d8cb-7f79-898dcead2438}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\third_party\icu\icuuc.vcxproj">
-      <Project>{8c637505-b3c3-3d12-6c72-86329a2b463a}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\generate_trig_table.vcxproj">
-      <Project>{1b815a0c-a282-e090-efeb-0d47a0629c83}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\js2c.vcxproj">
-      <Project>{c06d0c6f-0544-ce27-1a70-a8b9d4cc07f9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\v8.vcxproj">
-      <Project>{5cba7e91-2a4a-195b-373a-62bc67d7b4e9}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\v8_base.ia32.vcxproj">
-      <Project>{d040c1b1-1f9e-8801-cbc7-b3c0ca170f7c}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="..\third_party\v8-3.24.39\tools\gyp\v8_snapshot.vcxproj">
-      <Project>{1f38f785-adc4-5969-69e4-814e909c46ba}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="http_response.h" />
     <ClInclude Include="restbox.h" />
     <ClInclude Include="restbox_impl.h" />

@@ -16,6 +16,7 @@ h1.onrequest = function (request) {
 	print(r.local_ip);
 	print(r.remote_port);
 	print(r.local_port);
+
 	var hs = r.headers;
 	for (var i = 0, len = hs.length; i < len; ++i) {
 		print('----------------------------------------');
@@ -26,21 +27,10 @@ h1.onrequest = function (request) {
 		print(hs[n]);
 		print('----------------------------------------');
 	}
-	//print(r.content);
 
-    print('---------------------------------------------');
-    print(http.Response);
-
-    ++count;
-
-    if (count > 2) {
-        return http.Response;
-    }
-
-    //var res = new http.Response();
-    //res.statusCode = 500;
-    //res.data = 'server error';
-    //return res;
+    var res = new http.Response(r);
+	print (res);
+    res.send('hello world');
 };
 h1.onmessage = function () {
 	print('message');

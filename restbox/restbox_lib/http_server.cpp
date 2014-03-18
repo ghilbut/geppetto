@@ -51,7 +51,9 @@ bool Server::DoListen(uint16_t port) {
 }
 
 void Server::DoClose(void) {
-    strand_.post(boost::bind(&Server::handle_close, this));
+    if (!is_stop_) {
+        strand_.post(boost::bind(&Server::handle_close, this));
+    }
     if (thread_.joinable()) {
         thread_.join();
     }
@@ -116,7 +118,8 @@ void Server::handle_close() {
 
 void Server::handle_request(struct mg_connection *conn, Request* req) {
     if (on_request_.IsEmpty()) {
-        req->Respond(0);
+        // TODO(ghilbut): error handling
+        mg_send_data(conn, 0, 0);
         return;
     }
 
@@ -126,7 +129,8 @@ void Server::handle_request(struct mg_connection *conn, Request* req) {
 
     v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate_, on_request_);
     if (!func->IsCallable()) {
-        req->Respond(0);
+        // TODO(ghilbut): error handling
+        mg_send_data(conn, 0, 0);
         return;
     }
 
@@ -186,10 +190,7 @@ int Server::request_handler(struct mg_connection *conn) {
     if (!conn->is_websocket) {
         Request* req = new Request(conn);
         s->FireRequest(conn, req);
-        Response* res = req->Wait();
-        if (res == 0) {
-            mg_printf_data(conn, "Hello! Requested URI is [%s]", conn->uri);
-        }
+        req->Wait();
     } else {
         s->FireMessage(conn);
     }

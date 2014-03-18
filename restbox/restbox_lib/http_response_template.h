@@ -15,13 +15,11 @@ public:
 
     template<typename T>
     static Response* Unwrap(T _t);
-    static void GetStatusCode(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info);
-    static void SetStatusCode(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info);
-    //static void GetData(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info);
-    //static void SetData(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info);
+    static void SetStatusCode(const v8::FunctionCallbackInfo<v8::Value>& args);
+    static void SetResponseHeader(const v8::FunctionCallbackInfo<v8::Value>& args);
+    static void Send(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 private:
-    static v8::Persistent<v8::FunctionTemplate> template_;
     ResponseTemplate(void) {}
 };
 

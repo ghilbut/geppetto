@@ -1,5 +1,6 @@
 #include "http_request.h"
 #include "http_request_template.h"
+#include "http_response_template.h"
 #include <mongoose.h>
 
 
@@ -229,7 +230,5 @@ void RequestTemplate::GetContent(v8::Local<v8::String> property, const v8::Prope
         info.GetReturnValue().Set(v8::String::NewFromUtf8(isolate, c.c_str()));
     }
 }
-
-
 
 }  // namespace Http
