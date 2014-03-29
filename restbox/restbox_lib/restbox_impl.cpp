@@ -71,8 +71,8 @@ RestBox::Impl::Impl(const Storage& storage)
     if (!ExecuteString(isolate,
         source,
         v8::String::NewFromUtf8(isolate, storage_.settings()),
-        false,
-        false)) {
+        true, //false,
+        true)) { //false)) {
             //return -1;
     }
 }

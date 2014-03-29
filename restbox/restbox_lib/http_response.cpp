@@ -6,10 +6,9 @@
 
 namespace Http {
 
-Response::Response(Request* req) 
-    : req_(req)
-    , status_code_(200) {
-    assert(req != 0);
+Response::Response(void) 
+    : status_code_(200) {
+    // nothing
 }
 
 void Response::WeakCallback(const v8::WeakCallbackData<v8::Object, Response>& data) {
@@ -30,20 +29,45 @@ void Response::ClearWeak(void) {
     self_.ClearWeak();
 }
 
-void Response::SetStatusCode(int status_code) {
+int Response::status_code(void) const {
+    return status_code_;
+}
+
+void Response::set_status_code(int status_code) {
     status_code_ = status_code;
 }
 
-void Response::SetResponseHeader(const char* name, const char* value) {
+const char* Response::GetHeader(const char* name) const {
+    HeaderMap::const_iterator itr = headers_.find(name);
+    if (itr == headers_.end()) {
+        return 0;
+    }
+    return (itr->second).c_str();
+}
+
+void Response::SetHeader(const char* name, const char* value) {
     headers_[name] = value;
 }
 
-void Response::Send(const char* data, int data_len) const {
+void Response::RemoveHeader(const char* name) {
+    HeaderMap::const_iterator itr = headers_.find(name);
+    if (itr != headers_.end()) {
+        headers_.erase(itr);
+    }
+}
 
-    struct mg_connection* conn = req_->conn();
-    assert(conn != 0);
+const std::string& Response::data(void) const {
+    return data_;
+}
+
+void Response::set_data(const char* data, int data_len) {
+    data_.swap(std::string(data, data + data_len));
+}
+
+void Response::Send(struct mg_connection* conn) const {
 
     mg_send_status(conn, status_code_);
+
     if (!headers_.empty()) {
         HeaderMap::const_iterator itr = headers_.begin();
         HeaderMap::const_iterator end = headers_.end();
@@ -51,8 +75,12 @@ void Response::Send(const char* data, int data_len) const {
             mg_send_header(conn, (itr->first).c_str(), (itr->second).c_str());
         }
     }
-    mg_send_data(conn, data, data_len);
-    req_->Notify();
+
+    if (data_.empty()) {
+        mg_send_data(conn, 0, 0);
+    } else {
+        mg_send_data(conn, data_.c_str(), data_.length());
+    }
 }
 
 }  // namespace Http

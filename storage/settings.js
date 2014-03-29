@@ -28,9 +28,35 @@ h1.onrequest = function (request) {
 		print('----------------------------------------');
 	}
 
-    var res = new http.Response(r);
-	print (res);
-    res.send('hello world');
+    var res = new http.Response();
+	print(res);
+    print(res.statusCode);
+    res.statusCode = 500;
+    print(res.statusCode);
+    res.statusCode = 200;
+    print(res.statusCode);
+
+    
+    res.setHeader('A', 'B');
+    print(res.getHeader);
+    print(res.getHeader('A'));
+    res.removeHeader('A');
+    print(res.getHeader('A'));
+
+    print(res.data);
+    res.data = 'A';
+    print(res.data);
+    res.data = 'B';
+    print(res.data);
+    res.data = 'C';
+    print(res.data);
+
+    return res;
+    //return "ABC";
+    //return null;
+    //return undefined;
+    //return NaN;
+    //return http.Response;
 };
 h1.onmessage = function () {
 	print('message');

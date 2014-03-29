@@ -3,7 +3,6 @@
 
 #include <v8.h>
 #include <boost/asio.hpp>
-#include <boost/thread.hpp>
 #include <map>
 #include <string>
 
@@ -22,9 +21,6 @@ public:
     static void WeakCallback(const v8::WeakCallbackData<v8::Object, Request>& data);
     void MakeWeak(v8::Isolate* isolate, v8::Local<v8::Object> self);
     void ClearWeak(void);
-
-    void Wait(void) const;
-    void Notify(void) const;
 
     struct mg_connection* conn(void) const;
 
@@ -45,9 +41,6 @@ private:
 
     std::map<std::string, std::string> headers_;
     const std::string content_;
-
-    mutable boost::mutex mutex_;
-    mutable boost::condition_variable wait_;
 
     v8::Persistent<v8::Object> self_;
 };

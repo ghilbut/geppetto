@@ -15,9 +15,11 @@ v8::Local<v8::FunctionTemplate> ResponseTemplate::Get(v8::Isolate* isolate) {
 
         v8::Local<v8::ObjectTemplate> ot = ft->InstanceTemplate();
         ot->SetInternalFieldCount(1);
-        ot->Set(isolate, "setStatusCode", v8::FunctionTemplate::New(isolate, &Send));
-        ot->Set(isolate, "setResponseHeader", v8::FunctionTemplate::New(isolate, &Send));
-        ot->Set(isolate, "send", v8::FunctionTemplate::New(isolate, &Send));
+        ot->SetAccessor(v8::String::NewFromUtf8(isolate, "statusCode"), GetStatusCode, SetStatusCode);
+        ot->Set(isolate, "getHeader", v8::FunctionTemplate::New(isolate, ResponseTemplate::GetHeader));
+        ot->Set(isolate, "setHeader", v8::FunctionTemplate::New(isolate, ResponseTemplate::SetHeader));
+        ot->Set(isolate, "removeHeader", v8::FunctionTemplate::New(isolate, ResponseTemplate::RemoveHeader));
+        ot->SetAccessor(v8::String::NewFromUtf8(isolate, "data"), GetData, SetData);
 
         template_.Reset(isolate, ft);
     } else {
@@ -37,27 +39,8 @@ void ResponseTemplate::Constructor(const v8::FunctionCallbackInfo<v8::Value>& ar
         return;
     }
 
-    if (args.Length() == 0) {
-        // TODO(ghilbut): throw exception
-        return;
-    }
-
-
-    if (!args[0]->IsObject()) {
-        // TODO(ghilbut): throw exception
-        return;
-    }
-
-    v8::Local<v8::Object> obj = args[0]->ToObject();
-    if (obj->GetConstructor() != RequestTemplate::Get(isolate)->GetFunction()) {
-        // TODO(ghilbut): throw exception
-        return;
-    }
-
-    Request* req = static_cast<Request*>(obj->GetAlignedPointerFromInternalField(0));
-
     v8::Local<v8::Object> object = args.Holder();
-    Response* response = new Response(req);
+    Response* response = new Response();
     response->MakeWeak(isolate, object);
     args.GetReturnValue().Set(object);
 }
@@ -68,24 +51,52 @@ Response* ResponseTemplate::Unwrap(T _t) {
     return static_cast<Response*>(object->GetAlignedPointerFromInternalField(0));
 }
 
-void ResponseTemplate::SetStatusCode(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void ResponseTemplate::GetStatusCode(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
+    v8::Isolate* isolate = info.GetIsolate();
+
+    const int status_code = Unwrap(info)->status_code();
+    info.GetReturnValue().Set(status_code);
+}
+
+void ResponseTemplate::SetStatusCode(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
+    v8::Isolate* isolate = info.GetIsolate();
+
+    if (!value->IsNumber()) {
+        // TODO(ghilbut): throw exception
+        return;
+    }
+
+    Unwrap(info)->set_status_code(value->Int32Value());
+}
+
+void ResponseTemplate::GetHeader(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = args.GetIsolate();
     v8::HandleScope handle_scope(isolate);
 
-    if (args.Length() == 0) {
+    if (args.Length() < 1) {
         // TODO(ghilbut): throw exception
         return;
     }
 
-    if (!args[0]->IsNumber()) {
+    if (!args[0]->IsString()) {
         // TODO(ghilbut): throw exception
         return;
     }
 
-    Unwrap(args)->SetStatusCode(args[0]->Int32Value());
+    v8::Local<v8::String> str = args[0]->ToString();
+
+    const int len = str->Utf8Length();
+    char* name = new char[len+1];
+    name[str->WriteUtf8(name, len)] = '\0';
+    const char* value = Unwrap(args)->GetHeader(name);
+    delete[] name;
+
+    if (value != 0) {
+        args.GetReturnValue().Set(v8::String::NewFromUtf8(isolate, value));
+    }
 }
 
-void ResponseTemplate::SetResponseHeader(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void ResponseTemplate::SetHeader(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = args.GetIsolate();
     v8::HandleScope handle_scope(isolate);
 
@@ -99,31 +110,69 @@ void ResponseTemplate::SetResponseHeader(const v8::FunctionCallbackInfo<v8::Valu
         return;
     }
 
-    char name[512];
-    char value[512];
-    name[args[0]->ToString()->WriteUtf8(name, 512)] = '\0';
-    value[args[1]->ToString()->WriteUtf8(value, 512)] = '\0';
+    v8::Local<v8::String> str = args[0]->ToString();
 
-    Unwrap(args)->SetResponseHeader(name, value);
+    const int name_len = str->Utf8Length();
+    char* name = new char[name_len+1];
+    name[str->WriteUtf8(name, name_len)] = '\0';
+
+    str = args[1]->ToString();
+
+    const int value_len = str->Utf8Length();
+    char* value = new char[value_len+1];
+    value[str->WriteUtf8(value, value_len)] = '\0';
+
+    Unwrap(args)->SetHeader(name, value);
+
+    delete[] value;
+    delete[] name;
 }
 
-void ResponseTemplate::Send(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void ResponseTemplate::RemoveHeader(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = args.GetIsolate();
     v8::HandleScope handle_scope(isolate);
-    const Response* res = Unwrap(args);
 
-    if (args.Length() == 0) {
-        res->Send(0, 0);
+    if (args.Length() < 1) {
+        // TODO(ghilbut): throw exception
         return;
     }
 
-    v8::Local<v8::String> data = args[0]->ToString();
+    if (!args[0]->IsString()) {
+        // TODO(ghilbut): throw exception
+        return;
+    }
 
-    const int len = data->Utf8Length();
-    char* buf = new char[len];
-    data->WriteUtf8(buf, len);
-    res->Send(buf, len);
-    delete[] buf;
+    v8::Local<v8::String> str = args[0]->ToString();
+
+    const int len = str->Utf8Length();
+    char* name = new char[len+1];
+    name[str->WriteUtf8(name, len)] = '\0';
+    Unwrap(args)->RemoveHeader(name);
+    delete[] name;
+}
+
+void ResponseTemplate::GetData(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
+    v8::Isolate* isolate = info.GetIsolate();
+    Response* res = Unwrap(info);
+
+    const std::string& data = res->data();
+    v8::Local<v8::String> str = v8::String::NewFromUtf8(info.GetIsolate(), data.c_str());
+    info.GetReturnValue().Set(str);
+}
+
+void ResponseTemplate::SetData(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
+    v8::Isolate* isolate = info.GetIsolate();
+    Response* res = Unwrap(info);
+
+    v8::Local<v8::String> str = value->ToString();
+
+    const int data_len = str->Utf8Length();
+    if (data_len > 0) {
+        char* data = new char[data_len];
+        str->WriteUtf8(data, data_len);
+        res->set_data(data, data_len);
+        delete[] data;    
+    }
 }
 
 }  // namespace Http

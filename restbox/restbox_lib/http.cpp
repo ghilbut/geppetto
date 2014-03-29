@@ -28,7 +28,7 @@ v8::Local<v8::FunctionTemplate> Template::Get(v8::Isolate* isolate) {
 
         v8::Handle<v8::ObjectTemplate> ot = ft->InstanceTemplate();
         ot->Set(v8::String::NewFromUtf8(isolate, "Server"), ServerTemplate::Get(isolate));
-        //ot->Set(v8::String::NewFromUtf8(isolate, "Request"), RequestTemplate::Get(isolate));
+        ot->Set(v8::String::NewFromUtf8(isolate, "Request"), RequestTemplate::Get(isolate));
         ot->Set(v8::String::NewFromUtf8(isolate, "Response"), ResponseTemplate::Get(isolate));
         ot->SetInternalFieldCount(1);
 

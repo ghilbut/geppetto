@@ -33,7 +33,7 @@ private:
 
 private:
     static v8::Persistent<v8::FunctionTemplate> template_;
-    static v8::Persistent<v8::ObjectTemplate> object_t_;
+    static v8::Persistent<v8::ObjectTemplate> headers_t_;
     RequestTemplate(void) {}
 };
 

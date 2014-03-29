@@ -1,6 +1,5 @@
 #include "http_request.h"
 #include "http_request_template.h"
-#include "http_response.h"
 #include "http_server.h"
 #include <mongoose.h>
 #include <cassert>
@@ -47,16 +46,6 @@ void Request::MakeWeak(v8::Isolate* isolate, v8::Local<v8::Object> self) {
 
 void Request::ClearWeak(void) {
     self_.ClearWeak();
-}
-
-void Request::Wait(void) const {
-    boost::unique_lock<boost::mutex> lock(mutex_);
-    wait_.wait(lock);
-}
-
-void Request::Notify(void) const {
-    boost::unique_lock<boost::mutex> lock(mutex_);
-    wait_.notify_one();
 }
 
 struct mg_connection* Request::conn(void) const {

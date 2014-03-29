@@ -7,7 +7,7 @@
 namespace Http {
 
 v8::Persistent<v8::FunctionTemplate> RequestTemplate::template_;
-v8::Persistent<v8::ObjectTemplate> RequestTemplate::object_t_;
+v8::Persistent<v8::ObjectTemplate> RequestTemplate::headers_t_;
 
 v8::Local<v8::FunctionTemplate> RequestTemplate::Get(v8::Isolate* isolate) {
     
@@ -78,14 +78,14 @@ v8::Local<v8::Object> RequestTemplate::NewInstance(v8::Isolate* isolate, struct 
     v8::Local<v8::Object> i = f->NewInstance();
 
     v8::Local<v8::ObjectTemplate> headers_t;
-    if (object_t_.IsEmpty()) {
+    if (headers_t_.IsEmpty()) {
         headers_t = v8::ObjectTemplate::New(isolate);
         headers_t->SetNamedPropertyHandler(RequestTemplate::HeaderGetter);
         headers_t->SetIndexedPropertyHandler(RequestTemplate::HeaderGetter);
         headers_t->SetInternalFieldCount(1);
-        object_t_.Reset(isolate, headers_t);
+        headers_t_.Reset(isolate, headers_t);
     } else {
-        headers_t = v8::Local<v8::ObjectTemplate>::New(isolate, object_t_);
+        headers_t = v8::Local<v8::ObjectTemplate>::New(isolate, headers_t_);
     }
 
     Request* request = new Request(conn);
@@ -101,14 +101,14 @@ v8::Local<v8::Object> RequestTemplate::NewInstance(v8::Isolate* isolate, struct 
 v8::Local<v8::Object> RequestTemplate::NewInstance(v8::Isolate* isolate, Request* req) {
 
     v8::Local<v8::ObjectTemplate> headers_t;
-    if (object_t_.IsEmpty()) {
+    if (headers_t_.IsEmpty()) {
         headers_t = v8::ObjectTemplate::New(isolate);
         headers_t->SetNamedPropertyHandler(RequestTemplate::HeaderGetter);
         headers_t->SetIndexedPropertyHandler(RequestTemplate::HeaderGetter);
         headers_t->SetInternalFieldCount(1);
-        object_t_.Reset(isolate, headers_t);
+        headers_t_.Reset(isolate, headers_t);
     } else {
-        headers_t = v8::Local<v8::ObjectTemplate>::New(isolate, object_t_);
+        headers_t = v8::Local<v8::ObjectTemplate>::New(isolate, headers_t_);
     }
 
     v8::Local<v8::Object> headers = headers_t->NewInstance();

@@ -83,8 +83,14 @@ void Server::set_error_trigger(v8::Isolate* isolate, v8::Handle<v8::Function> tr
     on_error_.Reset(isolate, trigger);
 }
 
-void Server::FireRequest(struct mg_connection *conn, Request* req) {
-    strand_.post(boost::bind(&Server::handle_request, this, conn, req));
+ResponsePtr Server::FireRequest(struct mg_connection *conn, Request* req) {
+    boost::promise<ResponsePtr> promise;
+
+    void (boost::promise<ResponsePtr>::*setter)(const ResponsePtr&) = &boost::promise<ResponsePtr>::set_value;
+    boost::function<void(const ResponsePtr&)> promise_setter = boost::bind(setter, &promise, _1);
+    strand_.post(boost::bind(&Server::handle_request, this, conn, req, promise_setter));
+
+    return promise.get_future().get();
 }
 
 void Server::FireMessage(struct mg_connection *conn) {
@@ -116,7 +122,7 @@ void Server::handle_close() {
     is_stop_ = true;
 }
 
-void Server::handle_request(struct mg_connection *conn, Request* req) {
+void Server::handle_request(struct mg_connection *conn, Request* req, boost::function<void(const ResponsePtr&)> ret_setter) {
     if (on_request_.IsEmpty()) {
         // TODO(ghilbut): error handling
         mg_send_data(conn, 0, 0);
@@ -139,7 +145,33 @@ void Server::handle_request(struct mg_connection *conn, Request* req) {
     params[0] = RequestTemplate::NewInstance(isolate_, req);
 
     v8::Local<v8::Object> object = v8::Local<v8::Object>::New(isolate_, self_);
-    func->Call(object, 1, params);
+    v8::Local<v8::Value> retval = func->Call(object, 1, params);
+
+    if (retval->IsString()) {
+        v8::Local<v8::String> str = retval->ToString();
+    }
+
+    if (retval->IsObject()) {
+        v8::Local<v8::Object> obj = retval->ToObject();
+        if (obj->GetConstructor() == ResponseTemplate::Get(isolate)->GetFunction()) {
+            Response* res = static_cast<Response*>(obj->GetAlignedPointerFromInternalField(0));
+            ret_setter(ResponsePtr(res));
+            res->ClearWeak();
+            return;
+        }
+    }
+
+    v8::Local<v8::String> str = retval->ToString();
+
+    const int len = str->Utf8Length();
+    char* buf = new char[len];
+    str->WriteUtf8(buf, len);
+
+    ResponsePtr res(new Response());
+    res->set_data(buf, len);
+    ret_setter(res);
+    
+    delete[] buf;
 }
 
 void Server::handle_message(struct mg_connection *conn) {
@@ -189,8 +221,8 @@ int Server::request_handler(struct mg_connection *conn) {
     Server* s = static_cast<Server*>(conn->server_param);
     if (!conn->is_websocket) {
         Request* req = new Request(conn);
-        s->FireRequest(conn, req);
-        req->Wait();
+        ResponsePtr res = s->FireRequest(conn, req);
+        res->Send(conn);
     } else {
         s->FireMessage(conn);
     }

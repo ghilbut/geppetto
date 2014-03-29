@@ -15,23 +15,30 @@ class Request;
 
 class Response {
 public:
-    explicit Response(Request* req);
+    Response(void);
     ~Response(void) {}
 
     static void WeakCallback(const v8::WeakCallbackData<v8::Object, Response>& data);
     void MakeWeak(v8::Isolate* isolate, v8::Local<v8::Object> self);
     void ClearWeak(void);
 
-    void SetStatusCode(int status_code);
-    void SetResponseHeader(const char* name, const char* value);
-    void Send(const char* data, int data_len) const;
+    int status_code(void) const;
+    void set_status_code(int status_code);
+
+    const char* GetHeader(const char* name) const;
+    void SetHeader(const char* name, const char* value);
+    void RemoveHeader(const char* name);
+
+    const std::string& data(void) const;
+    void set_data(const char* data, int data_len);
+
+    void Send(struct mg_connection* conn) const;
 
 private:
-    Request* req_;
-
     typedef std::map<std::string, std::string> HeaderMap;
     int status_code_;
     HeaderMap headers_;
+    std::string data_;
 
     v8::Persistent<v8::Object> self_;
 };

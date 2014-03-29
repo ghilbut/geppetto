@@ -4,6 +4,7 @@
 #include <v8.h>
 #include <boost/asio.hpp>
 #include <boost/atomic.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <stdint.h>
 
@@ -14,6 +15,8 @@ struct mg_connection;
 namespace Http {
 
 class Request;
+class Response;
+typedef boost::shared_ptr<Response> ResponsePtr;
 
 class Server {
 public:
@@ -35,14 +38,14 @@ public:
     void set_error_trigger(v8::Isolate* isolate, v8::Handle<v8::Function> trigger);
 
 private:
-    void FireRequest(struct mg_connection *conn, Request* req);
+    ResponsePtr FireRequest(struct mg_connection *conn, Request* req);
     void FireMessage(struct mg_connection *conn);
     void FireError(void);
 
     void handle_listen(uint16_t port, boost::function<void(const bool&)> ret_setter);
     void handle_close(void);
 
-    void handle_request(struct mg_connection *conn, Request* req);
+    void handle_request(struct mg_connection *conn, Request* req, boost::function<void(const ResponsePtr&)> ret_setter);
     void handle_message(struct mg_connection *conn);
     void handle_error(void);
 
